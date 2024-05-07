@@ -15,7 +15,7 @@ class Book(models.Model):
 
 
     class Meta:
-        ordering = ['bookName', "authorName", "category_name"]
+        ordering = ['bookName', "authorName", "category__name"]
 
 class BorrowBook(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
