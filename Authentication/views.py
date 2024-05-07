@@ -1,5 +1,3 @@
-import datetime
-
 from django.contrib.auth import authenticate, login, logout
 
 from rest_framework.response import Response
@@ -88,3 +86,13 @@ class UserAuthentication:
                 return Response({"errors":"password not match"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    @api_view(["POST"])
+    def logout(request):
+        token = get_token_or_none(request)
+        if not token:
+            return Response({"errors":"not authenticated user-invalid token"}, status=status.HTTP_403_FORBIDDEN)
+        token.delete()
+        logout(request)
+        return Response({"success":"user logout successfully"}, status=status.HTTP_200_OK)
