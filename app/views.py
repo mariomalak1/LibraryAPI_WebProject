@@ -36,5 +36,25 @@ class BookView(APIView):
         serializer = BookSerializer(book)
         return Response(serializer.data)
 
+
     def post(self, request):
-        pass
+        data = request.data
+
+        # try to check that category is created before
+        categoryName = data.get("category")
+        if categoryName:
+            category = Category.objects.filter(name=categoryName).first()
+            if not category:
+                return Response({"errors": "no category with this name."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"errors": "category name field is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        data = request.data.copy()
+        data["category"] = category.pk
+
+        serializer = BookSerializer(data=data)
+
+        if serializer.is_valid():
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
