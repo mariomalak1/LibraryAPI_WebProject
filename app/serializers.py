@@ -1,7 +1,10 @@
 from rest_framework import serializers
 
-from .models import Category, Book
 from Authentication.serializer import UserSerializer
+
+from .models import Category, Book
+
+# create serializers here
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
