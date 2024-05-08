@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from Authentication.serializer import UserSerializer
 
-from .models import Category, Book
+from .models import Category, Book, BorrowBook
 
 # create serializers here
 

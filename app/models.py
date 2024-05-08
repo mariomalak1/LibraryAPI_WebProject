@@ -12,7 +12,7 @@ class Category(models.Model):
 class Book(models.Model):
     bookName = models.CharField(max_length=150, null=False, blank=False, unique=True)
     authorName = models.CharField(max_length=150, null=False, blank=False)
-    avalibleNumber = models.PositiveSmallIntegerField(default=1)
+    avalible = models.BooleanField(default=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
 

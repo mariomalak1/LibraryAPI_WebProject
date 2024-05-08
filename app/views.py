@@ -1,19 +1,26 @@
 from rest_framework.response import Response
-from rest_framework.decorators import APIView
+from rest_framework.decorators import api_view
 from rest_framework import status
 
 from .models import *
 from .serializers import *
+from .decorators import is_admin, isAuthenticatedWithValidToken
 
 # Create your views here.
 
-class CategoryView(APIView):
-    def get(self, request):
+class CategoryView:
+    @staticmethod
+    @api_view(["GET"])
+    @is_admin
+    def getAllCategories(request):
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 
-    def post(self, request):
+    @staticmethod
+    @api_view(["POST"])
+    @is_admin
+    def postCategory(request):
         data = request.data
         serializer = CategorySerializer(data=data)
         if serializer.is_valid():
@@ -21,23 +28,45 @@ class CategoryView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class BookView(APIView):
-    def get(self, request):
+class BookView:
+    @staticmethod
+    @api_view(["GET"])
+    @isAuthenticatedWithValidToken
+    def getAllBooks(request):
         data = request.data
+
+        books = Book.objects.all()
+
+        # do search filter
+
         if data.get("name"):
-            books = Book.objects.filter(bookName__icontains=data.get("name"))
-        else:
-            books = Book.objects.all()
+            books = books.objects.filter(bookName__icontains=data.get("name")).all()
+
+        elif data.get("author"):
+            books = books.objects.filter(authorName__icontains=data.get("author")).all()
+
+        elif data.get("category"):
+            books = books.objects.filter(category__name__icontains=data.get("category")).all()
+
+        elif data.get("is_avalible"):
+            pass
+            books = books.filter(avalible=True).all()
+
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
 
-    def get_object(self, request, ref):
+    @staticmethod
+    @api_view(["GET"])
+    @isAuthenticatedWithValidToken
+    def getBook(request, ref):
         book = Book.objects.filter(bookName=ref).first()
         serializer = BookSerializer(book)
         return Response(serializer.data)
 
-
-    def post(self, request):
+    @staticmethod
+    @api_view(["POST"])
+    @is_admin
+    def postBook(request):
         data = request.data
 
         # try to check that category is created before
@@ -58,3 +87,23 @@ class BookView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    @staticmethod
+    @api_view(["PATCH"])
+    @is_admin
+    def patch(request, ref):
+        data = request.data
+        serializer = BookSerializer(data=data, instance=subject, partial=True)
+        # if serializer.is_valid()
+
+
+    @staticmethod
+    @api_view(["DELETE"])
+    @is_admin
+    def delete(request, ref):
+        book = Book.objects.filter(bookName=ref).first()
+        if not book:
+            return Response({"errors":"no book with this name."}, status=status.HTTP_404_NOT_FOUND)
+        book.delete()
+        return Response({"success":"book deleted successfully."}, status=status.HTTP_200_OK)
