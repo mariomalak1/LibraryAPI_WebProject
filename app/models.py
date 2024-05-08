@@ -5,6 +5,9 @@ from django.contrib.auth.models import User as djangoUser
 class Category(models.Model):
     name = models.CharField(max_length=70, unique=True)
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 
@@ -23,4 +26,3 @@ class Book(models.Model):
 
     class Meta:
         ordering = ['bookName', "authorName", "category__name"]
-

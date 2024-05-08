@@ -12,14 +12,14 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ["name"]
 
 class BookSerializer(serializers.ModelSerializer):
-    category = serializers.SerializerMethodField()
-
+    # category = serializers.SerializerMethodField()
+    avaliable = serializers.BooleanField(default=True)
     class Meta:
         model = Book
         fields = ["bookName", "authorName", "avaliable", "description", "category", "userBorrow"]
 
-    def get_category(self, obj):
-        categorySerializer = CategorySerializer(obj.category)
-        return categorySerializer.data
+    # def get_category(self, obj):
+    #     categorySerializer = CategorySerializer(obj.category)
+    #     return categorySerializer.data
 
 

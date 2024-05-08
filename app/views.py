@@ -12,7 +12,7 @@ class CategoryView:
     @staticmethod
     @api_view(["GET"])
     @is_admin
-    def getAllCategories(request):
+    def getAllCategories(request, *args, **kwargs):
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
@@ -20,10 +20,11 @@ class CategoryView:
     @staticmethod
     @api_view(["POST"])
     @is_admin
-    def postCategory(request):
+    def postCategory(request, *args, **kwargs):
         data = request.data
         serializer = CategorySerializer(data=data)
         if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -32,7 +33,7 @@ class BookView:
     @staticmethod
     @api_view(["GET"])
     @isAuthenticatedWithValidToken
-    def getAllBooks(request):
+    def getAllBooks(request, *args, **kwargs):
         data = request.data
 
         books = Book.objects.all()
@@ -60,7 +61,7 @@ class BookView:
     @staticmethod
     @api_view(["GET"])
     @isAuthenticatedWithValidToken
-    def getBook(request, ref):
+    def getBook(request, ref, *args, **kwargs):
         book = Book.objects.filter(bookName=ref).first()
         serializer = BookSerializer(book)
         return Response(serializer.data)
@@ -68,7 +69,7 @@ class BookView:
     @staticmethod
     @api_view(["POST"])
     @is_admin
-    def postBook(request):
+    def createBook(request, *args, **kwargs):
         data = request.data
 
         # try to check that category is created before
@@ -83,9 +84,17 @@ class BookView:
         data = request.data.copy()
         data["category"] = category.pk
 
+        print(data["category"])
+
         serializer = BookSerializer(data=data)
 
         if serializer.is_valid():
+            book = serializer.save()
+            print(serializer.validated_data.get("avaliable"))
+            if ((serializer.validated_data.get("avaliable")) or (serializer.validated_data.get("avaliable") is None)):
+                book.avaliable = True
+                book.save()
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -94,7 +103,7 @@ class BookView:
     @staticmethod
     @api_view(["PATCH"])
     @is_admin
-    def patch(request, ref):
+    def patch(request, ref, *args, **kwargs):
         data = request.data
         serializer = BookSerializer(data=data, instance=subject, partial=True)
         # if serializer.is_valid()
@@ -103,7 +112,7 @@ class BookView:
     @staticmethod
     @api_view(["DELETE"])
     @is_admin
-    def delete(request, ref):
+    def delete(request, ref, *args, **kwargs):
         book = Book.objects.filter(bookName=ref).first()
         if not book:
             return Response({"errors":"no book with this name."}, status=status.HTTP_404_NOT_FOUND)
