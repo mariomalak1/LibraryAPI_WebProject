@@ -13,7 +13,7 @@ class Book(models.Model):
     bookName = models.CharField(max_length=150, null=False, blank=False, unique=True)
     authorName = models.CharField(max_length=150, null=False, blank=False)
 
-    avalible = models.BooleanField(default=True)
+    avaliable = models.BooleanField(default=True)
 
     # user that borrow book
     userBorrow = models.ForeignKey(djangoUser, on_delete=models.SET_NULL, null=True, blank=True)
