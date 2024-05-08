@@ -63,8 +63,11 @@ class BookView:
     @isAuthenticatedWithValidToken
     def getBook(request, ref, *args, **kwargs):
         book = Book.objects.filter(bookName=ref).first()
-        serializer = BookSerializer(book)
-        return Response(serializer.data)
+        if book:
+            serializer = BookSerializer(book)
+            return Response(serializer.data)
+        else:
+            return Response({"erorrs":"no book with this name."}, status=status.HTTP_404_NOT_FOUND)
 
     @staticmethod
     @api_view(["POST"])
@@ -77,25 +80,18 @@ class BookView:
         if categoryName:
             category = Category.objects.filter(name=categoryName).first()
             if not category:
-                return Response({"errors": "no category with this name."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"category": "no category with this name."}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"errors": "category name field is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"category": "category name field is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         data = request.data.copy()
         data["category"] = category.pk
 
-        print(data["category"])
-
-        serializer = BookSerializer(data=data)
+        serializer = NormalBookSerializer(data=data)
 
         if serializer.is_valid():
-            book = serializer.save()
-            print(serializer.validated_data.get("avaliable"))
-            if ((serializer.validated_data.get("avaliable")) or (serializer.validated_data.get("avaliable") is None)):
-                book.avaliable = True
-                book.save()
-
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -103,16 +99,45 @@ class BookView:
     @staticmethod
     @api_view(["PATCH"])
     @is_admin
-    def patch(request, ref, *args, **kwargs):
+    def updateBook(request, ref, *args, **kwargs):
         data = request.data
-        serializer = BookSerializer(data=data, instance=subject, partial=True)
-        # if serializer.is_valid()
+
+        # get userBorrow and category if he need to update
+        userBorrow = data.get("userBorrow")
+        category = data.get("category")
+
+        data = request.data.copy()
+
+        if category:
+            categoryObj = Category.objects.filter(name=category).first()
+            if not categoryObj:
+                return Response({"category": "no category with this name."}, status=status.HTTP_400_BAD_REQUEST)
+            data["category"] = categoryObj.id
+
+        if userBorrow:
+            userBorrowObj = User.objects.filter(username=userBorrow).first()
+            if not userBorrowObj:
+                return Response({"userBorrow": "no user with this username."}, status=status.HTTP_400_BAD_REQUEST)
+            data["userBorrow"] = userBorrowObj.id
+
+
+        book = Book.objects.filter(bookName=ref).first()
+        if not book:
+            return Response({"errors":"no book  with this name."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = NormalBookSerializer(data=data, instance=book, partial=True)
+        if serializer.is_valid():
+            book = serializer.update(instance=book, validated_data=serializer.validated_data)
+            serializer2 = BookSerializer(book)
+            return Response(serializer2.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
     @staticmethod
     @api_view(["DELETE"])
     @is_admin
-    def delete(request, ref, *args, **kwargs):
+    def deleteBook(request, ref, *args, **kwargs):
         book = Book.objects.filter(bookName=ref).first()
         if not book:
             return Response({"errors":"no book with this name."}, status=status.HTTP_404_NOT_FOUND)
@@ -130,3 +155,21 @@ class BorrowBookView:
         serializer = BookSerializer(books, many=True)
 
         return Response(serializer.data)
+
+    @staticmethod
+    @api_view(["POST"])
+    @isAuthenticatedWithValidToken
+    def borrowBook(request, ref, *args, **kwargs):
+        token = kwargs.get("token")
+        book = Book.objects.filter(bookName=ref).first()
+        if not book:
+            return Response({"errors":"no book with this name."}, status=status.HTTP_404_NOT_FOUND)
+        if not book.avaliable:
+            return Response({"errors":"this book not avaliable now."}, status=status.HTTP_400_BAD_REQUEST)
+
+        book.avaliable = False
+        book.userBorrow = token.user
+        book.save()
+        return Response({"success":"book borrowed successfully"}, status=status.HTTP_200_OK)
+
+
