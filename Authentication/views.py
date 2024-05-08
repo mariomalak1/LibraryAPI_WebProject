@@ -5,11 +5,8 @@ from rest_framework.decorators import api_view, APIView
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
-from .models import User, ResetCode
-from .serializer import RegisterSerializer, ForgetPassword,\
-    UserSerializer, ResetCodeSerializer, ResetPasswordSerializer, SignInSerializer, UpdateUserPassword
-from .utils import resetPasswordSendMail
-from project.utilis import getDataFromPaginator
+from django.contrib.auth.models import User
+from .serializer import RegisterSerializer, LoginSerializer
 # Create your views here.
 
 
@@ -47,12 +44,12 @@ class UserAuthentication:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     @staticmethod
-    @api_view(["GET"])
+    @api_view(["POST"])
     def login(request):
-        serializer = SignInSerializer(data = request.data)
+        serializer = LoginSerializer(data = request.data)
         if serializer.is_valid():
             username = serializer.validated_data.get("username")
-            user = User.objects.filter(email=username).first()
+            user = User.objects.filter(username=username).first()
             if user:
                 user = authenticate(request, username=user.username, password=serializer.validated_data.get("password"))
                 if user:
@@ -77,7 +74,7 @@ class UserAuthentication:
             user = User.objects.filter(username=serializer.data.get("username")).first()
             if user:
                 return Response({"error": "this username is already register"}, status=status.HTTP_406_NOT_ACCEPTABLE)
-            if serializer.data.get("rePassword") == serializer.data.get("password"):
+            if serializer.data.get("confirmPassword") == serializer.data.get("password"):
                 user = User(username=serializer.data.get("username"))
                 user.set_password(serializer.data.get("password"))
                 user.save()
@@ -90,7 +87,7 @@ class UserAuthentication:
     @staticmethod
     @api_view(["POST"])
     def logout(request):
-        token = get_token_or_none(request)
+        token = UserAuthentication.get_token_or_none(request)
         if not token:
             return Response({"errors":"not authenticated user-invalid token"}, status=status.HTTP_403_FORBIDDEN)
         token.delete()

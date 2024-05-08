@@ -8,9 +8,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ["username", "email", "password", "confirmPassword", "is_admin"]
 
     confirmPassword = serializers.CharField(required=True)
+    is_admin = serializers.BooleanField(default=False)
 
     def create(self, validated_data):
-        self.instance.is_staff = validated_data.get("is_admin") or False
+        self.instance.is_staff = validated_data.get("is_admin")
         self.instance.set_password(validated_data.get("password"))
 
         return super().create(self, validated_data)
