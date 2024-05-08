@@ -9,6 +9,7 @@ def isAuthenticatedWithValidToken(func):
     def test_user(request, *args, **kwargs):
         token = UserAuthentication.get_token_or_none(request)
         if token:
+            kwargs["token"] = token
             return func(request, *args, **kwargs)
         else:
             return Response({"errors": "you must login first."},
@@ -23,6 +24,7 @@ def is_admin(func):
             return Response({"errors": "you must login first."},
                             status=status.HTTP_403_FORBIDDEN)
         elif token.user.is_staff:
+            kwargs["token"] = token
             return func(request, *args, **kwargs)
         else:
             return Response({"errors": "you not authorized to enter this page."},

@@ -109,3 +109,15 @@ class BookView:
             return Response({"errors":"no book with this name."}, status=status.HTTP_404_NOT_FOUND)
         book.delete()
         return Response({"success":"book deleted successfully."}, status=status.HTTP_200_OK)
+
+class BorrowBookView:
+    @staticmethod
+    @api_view(["GET"])
+    @isAuthenticatedWithValidToken
+    def getAllBorrowedBooksByUser(request, *args, **kwargs):
+        token = kwargs.get("token")
+        books = Book.objects.filter(userBorrow_id=token.user.id).all()
+
+        serializer = BookSerializer(books, many=True)
+
+        return Response(serializer.data)

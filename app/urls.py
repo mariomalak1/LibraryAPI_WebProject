@@ -8,5 +8,10 @@ urlpatterns = [
 
 
     # path("books/", BookView.get, name="bookViews"),
-    # path("books/", BookView.post, name="bookViews")
+    # path("books/", BookView.post, name="bookViews"),
+
+
+    path("getAllBorrowedBooksByUser/",
+         BorrowBookView.getAllBorrowedBooksByUser, name="getAllBorrowedBooksByUser"),
+
 ]
