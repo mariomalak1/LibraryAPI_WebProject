@@ -23,10 +23,18 @@ class CategoryView(APIView):
 
 class BookView(APIView):
     def get(self, request):
-        pass
+        data = request.data
+        if data.get("name"):
+            books = Book.objects.filter(bookName__icontains=data.get("name"))
+        else:
+            books = Book.objects.all()
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data)
 
     def get_object(self, request, ref):
-        pass
+        book = Book.objects.filter(bookName=ref).first()
+        serializer = BookSerializer(book)
+        return Response(serializer.data)
 
     def post(self, request):
         pass
