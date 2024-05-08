@@ -12,16 +12,15 @@ class Category(models.Model):
 class Book(models.Model):
     bookName = models.CharField(max_length=150, null=False, blank=False, unique=True)
     authorName = models.CharField(max_length=150, null=False, blank=False)
+
     avalible = models.BooleanField(default=True)
+
+    # user that borrow book
+    userBorrow = models.ForeignKey(djangoUser, on_delete=models.SET_NULL, null=True, blank=True)
+
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
 
     class Meta:
         ordering = ['bookName', "authorName", "category__name"]
 
-class BorrowBook(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    user = models.ForeignKey(djangoUser, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.user.username + " borrow : " + self.book.bookName

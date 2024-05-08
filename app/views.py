@@ -48,8 +48,10 @@ class BookView:
         elif data.get("category"):
             books = books.objects.filter(category__name__icontains=data.get("category")).all()
 
-        elif data.get("is_avalible"):
-            pass
+        elif data.get("is_avalible_only"):
+            books = books.filter(avalible=True).all()
+
+        elif data.get("avaliable_not_borrow"):
             books = books.filter(avalible=True).all()
 
         serializer = BookSerializer(books, many=True)
