@@ -172,4 +172,18 @@ class BorrowBookView:
         book.save()
         return Response({"success":"book borrowed successfully"}, status=status.HTTP_200_OK)
 
+    @staticmethod
+    @api_view(["POST"])
+    @isAuthenticatedWithValidToken
+    def returnBookBack(request, ref, *args, **kwargs):
+        token = kwargs.get("token")
+        book = Book.objects.filter(bookName=ref).first()
+        if not book:
+            return Response({"errors": "no book with this name."}, status=status.HTTP_404_NOT_FOUND)
+        if book.userBorrow != token.user:
+            return Response({"errors": "you don't borrow this book before."}, status=status.HTTP_400_BAD_REQUEST)
 
+        book.avaliable = True
+        book.userBorrow = None
+        book.save()
+        return Response({"success": "book returned successfully"}, status=status.HTTP_200_OK)

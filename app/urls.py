@@ -15,7 +15,9 @@ urlpatterns = [
 
     path("getAllBorrowedBooksByUser/",
          BorrowBookView.getAllBorrowedBooksByUser, name="getAllBorrowedBooksByUser"),
-    path("borrowBook/<ref>",
+    path("borrowBook/<ref>/",
          BorrowBookView.borrowBook, name="borrowBook"),
+    path("returnBookBack/<ref>/",
+         BorrowBookView.returnBookBack, name="returnBookBack"),
 
 ]

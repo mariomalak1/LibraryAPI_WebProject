@@ -37,16 +37,6 @@ class NormalBookSerializer(serializers.ModelSerializer):
         model = Book
         exclude = ["id"]
 
-    # def is_valid(self, raise_exception=False):
-    #     if self.partial:
-    #         print(self.fields["userBorrow"])
-    #         self.fields["userBorrow"] =
-    #         print(self.fields.get("category"))
-    #         print(self.fields.get("category").validators)
-    #         # print(help(self.fields.get("category")))
-    #         self.fields.get("category").validators = []
-    #     return super().is_valid(raise_exception=raise_exception)
-
     def update(self, instance, validated_data):
         newInstace = super().update(instance, validated_data)
         if newInstace.userBorrow is None:
