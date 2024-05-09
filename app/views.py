@@ -30,12 +30,22 @@ class CategoryView:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class BookView:
+
+    @staticmethod
+    def getBookObjOrNone(ref):
+        try:
+            book = Book.objects.filter(ID=ref).first()
+            if book:
+                return book
+            return None
+        except:
+            return None
+
     @staticmethod
     @api_view(["GET"])
     @isAuthenticatedWithValidToken
     def getAllBooks(request, *args, **kwargs):
-        data = request.data
-
+        data = request.GET
         books = Book.objects.all()
 
         # do search filter
@@ -50,10 +60,10 @@ class BookView:
             books = books.objects.filter(category__name__icontains=data.get("category")).all()
 
         elif data.get("is_avalible_only"):
-            books = books.filter(avalible=True).all()
+            books = books.filter(avaliable=True).all()
 
         elif data.get("avaliable_not_borrow"):
-            books = books.filter(avalible=True).all()
+            books = books.filter(avaliable=True).all()
 
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
@@ -62,12 +72,12 @@ class BookView:
     @api_view(["GET"])
     @isAuthenticatedWithValidToken
     def getBook(request, ref, *args, **kwargs):
-        book = Book.objects.filter(ID=ref).first()
+        book = BookView.getBookObjOrNone(ref)
         if book:
             serializer = BookSerializer(book)
             return Response(serializer.data)
         else:
-            return Response({"erorrs":"no book with this name."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"erorrs":"no book with this ID."}, status=status.HTTP_404_NOT_FOUND)
 
     @staticmethod
     @api_view(["POST"])
@@ -102,6 +112,11 @@ class BookView:
     def updateBook(request, ref, *args, **kwargs):
         data = request.data
 
+        book = BookView.getBookObjOrNone(ref)
+
+        if not book:
+            return Response({"errors": "no book with this ID."}, status=status.HTTP_404_NOT_FOUND)
+
         # get userBorrow and category if he need to update
         userBorrow = data.get("userBorrow")
         category = data.get("category")
@@ -121,10 +136,6 @@ class BookView:
             data["userBorrow"] = userBorrowObj.id
 
 
-        book = Book.objects.filter(ID=ref).first()
-        if not book:
-            return Response({"errors":"no book  with this name."}, status=status.HTTP_404_NOT_FOUND)
-
         serializer = NormalBookSerializer(data=data, instance=book, partial=True)
         if serializer.is_valid():
             book = serializer.update(instance=book, validated_data=serializer.validated_data)
@@ -138,9 +149,10 @@ class BookView:
     @api_view(["DELETE"])
     @is_admin
     def deleteBook(request, ref, *args, **kwargs):
-        book = Book.objects.filter(ID=ref).first()
+        book = BookView.getBookObjOrNone(ref)
+
         if not book:
-            return Response({"errors":"no book with this name."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"errors":"no book with this ID."}, status=status.HTTP_404_NOT_FOUND)
         book.delete()
         return Response({"success":"book deleted successfully."}, status=status.HTTP_200_OK)
 
@@ -161,9 +173,11 @@ class BorrowBookView:
     @isAuthenticatedWithValidToken
     def borrowBook(request, ref, *args, **kwargs):
         token = kwargs.get("token")
-        book = Book.objects.filter(ID=ref).first()
+
+        book = BookView.getBookObjOrNone(ref)
+
         if not book:
-            return Response({"errors":"no book with this name."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"errors":"no book with this ID."}, status=status.HTTP_404_NOT_FOUND)
         if not book.avaliable:
             return Response({"errors":"this book not avaliable now."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -177,9 +191,10 @@ class BorrowBookView:
     @isAuthenticatedWithValidToken
     def returnBookBack(request, ref, *args, **kwargs):
         token = kwargs.get("token")
-        book = Book.objects.filter(ID=ref).first()
+        book = BookView.getBookObjOrNone(ref)
+
         if not book:
-            return Response({"errors": "no book with this name."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"errors": "no book with this ID."}, status=status.HTTP_404_NOT_FOUND)
         if book.userBorrow != token.user:
             return Response({"errors": "you don't borrow this book before."}, status=status.HTTP_400_BAD_REQUEST)
 

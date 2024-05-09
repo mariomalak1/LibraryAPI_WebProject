@@ -77,6 +77,10 @@ class UserAuthentication:
             if serializer.data.get("confirmPassword") == serializer.data.get("password"):
                 user = User(username=serializer.data.get("username"))
                 user.set_password(serializer.data.get("password"))
+
+                if serializer.data.get("is_admin"):
+                    user.is_staff = True
+
                 user.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
