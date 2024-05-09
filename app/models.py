@@ -13,7 +13,8 @@ class Category(models.Model):
 
 
 class Book(models.Model):
-    bookName = models.CharField(max_length=150, null=False, blank=False, unique=True)
+    ID = models.PositiveBigIntegerField(primary_key=True)
+    bookName = models.CharField(max_length=150, null=False, blank=False)
     authorName = models.CharField(max_length=150, null=False, blank=False)
 
     avaliable = models.BooleanField(default=True)

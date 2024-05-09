@@ -62,7 +62,7 @@ class BookView:
     @api_view(["GET"])
     @isAuthenticatedWithValidToken
     def getBook(request, ref, *args, **kwargs):
-        book = Book.objects.filter(bookName=ref).first()
+        book = Book.objects.filter(ID=ref).first()
         if book:
             serializer = BookSerializer(book)
             return Response(serializer.data)
@@ -121,7 +121,7 @@ class BookView:
             data["userBorrow"] = userBorrowObj.id
 
 
-        book = Book.objects.filter(bookName=ref).first()
+        book = Book.objects.filter(ID=ref).first()
         if not book:
             return Response({"errors":"no book  with this name."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -138,7 +138,7 @@ class BookView:
     @api_view(["DELETE"])
     @is_admin
     def deleteBook(request, ref, *args, **kwargs):
-        book = Book.objects.filter(bookName=ref).first()
+        book = Book.objects.filter(ID=ref).first()
         if not book:
             return Response({"errors":"no book with this name."}, status=status.HTTP_404_NOT_FOUND)
         book.delete()
@@ -161,7 +161,7 @@ class BorrowBookView:
     @isAuthenticatedWithValidToken
     def borrowBook(request, ref, *args, **kwargs):
         token = kwargs.get("token")
-        book = Book.objects.filter(bookName=ref).first()
+        book = Book.objects.filter(ID=ref).first()
         if not book:
             return Response({"errors":"no book with this name."}, status=status.HTTP_404_NOT_FOUND)
         if not book.avaliable:
@@ -177,7 +177,7 @@ class BorrowBookView:
     @isAuthenticatedWithValidToken
     def returnBookBack(request, ref, *args, **kwargs):
         token = kwargs.get("token")
-        book = Book.objects.filter(bookName=ref).first()
+        book = Book.objects.filter(ID=ref).first()
         if not book:
             return Response({"errors": "no book with this name."}, status=status.HTTP_404_NOT_FOUND)
         if book.userBorrow != token.user:

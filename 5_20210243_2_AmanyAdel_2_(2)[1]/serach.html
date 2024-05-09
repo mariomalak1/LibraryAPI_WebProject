@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <link rel="stylesheet" href="style/books.css">
+    <link rel="stylesheet" href="style/search.css">
+</head>
+<body>
+    <section>
+        <div class="layer">
+            <header>
+                <nav>
+                    <div class="Ucontainer">
+                        <div class="logo"><a href="index.html">Online Library</a></div>
+                        <ul class="nav-links">
+                            <li><a href="index.html">Home</a></li>
+
+                            <li><a href="Books.html">Available Books</a></li>
+                            <li><a href="borrowed.html">View Borrowed Books</a></li>
+                            <li><a href="index.html">Logout</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </header>
+        </div>
+    </section>
+        <input onkeyup="SearchB(this.value)" id="searchBar" placeholder="Search By Name..." type="text">
+   
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>ID</th>
+                    <th>Author</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Borrow</th>
+                </tr>
+            </thead>
+            <tbody id="booksTable">
+                <tr>
+                    <!-- <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><button onclick="updateB()">Update</button></td>
+                    <td><button onclick="deleteB()">Delete <i class="fa-solid fa-trash"></i> </button></td> -->
+                    <!-- <td><button>Borrow <i class="fa-solid fa-cart-shopping"></i></button></td> -->
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    <script src="js/search.js"></script>
+</body>
+</html>

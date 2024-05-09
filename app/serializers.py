@@ -17,7 +17,7 @@ class BookSerializer(serializers.ModelSerializer):
     userBorrow = serializers.SerializerMethodField()
     class Meta:
         model = Book
-        fields = ["bookName", "authorName", "avaliable", "description", "category", "userBorrow"]
+        fields = ["ID", "bookName", "authorName", "avaliable", "description", "category", "userBorrow"]
 
     def get_category(self, obj):
         categorySerializer = CategorySerializer(obj.category)
@@ -35,7 +35,7 @@ class NormalBookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        exclude = ["id"]
+        fields = "__all__"
 
     def update(self, instance, validated_data):
         newInstace = super().update(instance, validated_data)

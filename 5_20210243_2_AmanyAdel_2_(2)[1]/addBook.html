@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style/addBook.css">
+</head>
+
+<body>
+    <section>
+        <div class="layer">
+            <header>
+                <nav>
+                    <div class="Acontainer">
+                        <div class="logo"><a href="index.html">Online Library</a></div>
+                        <ul class="nav-links">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="adminBooks.html">View Available Books</a></li>
+                            <li><a href="index.html">Logout</a></li>
+                        </ul>
+                    </div>
+                </nav>
+            </header>
+        </div>
+    </section>
+    <div class="header">
+        <div class="container">
+            <label for="id">Book ID</label>
+            <input id="bookID" type="tel">
+            <label for="name">Book Name</label>
+            <input id="bookN" type="text">
+            <label for="author">Author</label>
+            <input id="author" type="text">
+            <label for="category">Book Category</label>
+            <input id="category" type="tel">
+            <label for="desc">Description</label>
+            <textarea name="" id="desc" cols="30" rows="10"></textarea>
+            <button onclick="addBook()" id="addButton">Add Book</button>
+
+        </div>
+    </div>
+
+    <script src="js/addBook.js"></script>
+</body>
+
+</html>
+
+
+<!-- (Books includes ID, book name, author, category, description) -->
