@@ -137,4 +137,4 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Set the allowed origins for your frontend application
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:5173', "https://corsproxy.io",]
+    'http://localhost:5501', "https://corsproxy.io",]
