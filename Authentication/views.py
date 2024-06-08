@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 
 from django.contrib.auth.models import User
-from .serializer import RegisterSerializer, LoginSerializer
+from .serializer import RegisterSerializer, LoginSerializer, UserSerializer
 # Create your views here.
 
 
@@ -57,9 +57,10 @@ class UserAuthentication:
                     token = Token.objects.filter(user=user).first()
                     if not token:
                         token = Token.objects.create(user=user)
+                    userData = UserSerializer(user)
                 else:
                     return Response({"message":"invalid username or password"}, status=status.HTTP_400_BAD_REQUEST)
-                return Response({"message": "user login succssfully", "token":token.key}, status=status.HTTP_200_OK)
+                return Response({"message": "user login succssfully", "token":token.key, "data":userData.data}, status=status.HTTP_200_OK)
             else:
                 return Response({"errors":"no user with this username"}, status=status.HTTP_400_BAD_REQUEST)
         else:

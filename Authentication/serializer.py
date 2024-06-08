@@ -25,7 +25,7 @@ class LoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "email"]
+        fields = ["username", "email", "is_staff"]
 
     def is_valid(self, raise_exception=False):
         if self.partial:
