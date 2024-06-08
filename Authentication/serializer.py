@@ -23,9 +23,14 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    is_admin = serializers.SerializerMethodField()
+
+    def get_is_admin(self, obj):
+        return obj.is_staff
+
     class Meta:
         model = User
-        fields = ["username", "email", "is_staff"]
+        fields = ["username", "email", "is_admin"]
 
     def is_valid(self, raise_exception=False):
         if self.partial:
