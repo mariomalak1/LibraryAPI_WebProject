@@ -115,6 +115,13 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+
 # CORS settings
 
 # If you want to allow all origins (not recommended for production)
@@ -143,7 +150,6 @@ CORS_ALLOW_METHODS = [
     'PUT',
     'PATCH',
     'DELETE',
-    'OPTIONS',
 ]
 
 # You can add any other CORS settings here as needed
